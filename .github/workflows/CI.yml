@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      mysql:
+      db:
         image: mysql:5.7
         env:
           MYSQL_ROOT_PASSWORD: MYSQL_ROOT_PASSWORD
@@ -24,7 +24,7 @@ jobs:
           MYSQL_USER: MYSQL_USER
           MYSQL_PASSWORD: MYSQL_PASSWORD
         ports:
-          - 9907:3306
+          - 9906:3306
         options: >-
           --health-cmd="mysqladmin ping --silent"
           --health-interval=10s
@@ -61,7 +61,4 @@ jobs:
       run: docker-compose build
 
     - name: Run Docker Compose
-      run: docker-compose up -d
-
-    - name: Run tests
-      run: docker-compose exec php-apache /bin/sh -c "php -v"
+      run: docker-compose up php-apache-environment -d
