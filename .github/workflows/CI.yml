@@ -61,4 +61,4 @@ jobs:
       run: docker-compose build
 
     - name: Run Docker Compose
-      run: docker-compose up php-apache-environment -d
+      run: docker-compose up -d php-apache-environment 
