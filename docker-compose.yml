@@ -1,34 +1,31 @@
 version: '3.3'
 
-# Declare services that will run in containers
 services:
-  
-  # Service for PHP-Apache environment container
   php-apache-environment:
-    container_name: php-apache # Define container name
-    build: # Define how to build the service's container image
-      context: . # Dockerfile build context (directory with Dockerfile)
-      dockerfile: Dockerfile # Name of the Dockerfile used for building
-    depends_on: # Define service dependencies
-      - db # Depends on the db service
-    volumes: # Mount host directories or named volumes to containers
-      #- ./php/src:/var/www/html/ # Mount host's ./php/src to container's /var/www/html
-      - ./apache2/000-default.conf:/etc/apache2/sites-available/000-default.conf # Mount host's ./apache2/000-default.conf to container's /etc/apache2/sites-available/000-default.conf
-    ports: # Expose container's ports to the host
-      - 8000:80 # Map container's port 80 to host's port 8000
-  
-  # Service for MySQL database container
+    container_name: php-apache
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    volumes:
+      - ./php/src:/usr/local/apache2/htdocs/
+      - ./apache2/000-default.conf:/etc/apache2/sites-available/000-default.conf
+    ports:
+      - 8000:80
+
   db:
-    container_name: db # Define container name
-    image: mysql # Use the official mysql Docker image from Docker Hub
-    command: mysqld --authentication_policy=mysql_native_password # Specify MySQL server configuration
-    restart: always # Always restart the container on failure or exit
-    environment: # Set environment variables
-      MYSQL_ROOT_PASSWORD: MYSQL_ROOT_PASSWORD # Set the root user's password
-      MYSQL_DATABASE: MYSQL_DATABASE # Create a new database with this name
-      MYSQL_USER: MYSQL_USER # Create a new user with this username
-      MYSQL_PASSWORD: MYSQL_PASSWORD # Set the new user's password
-    volumes: # Mount host directories or named volumes to containers
-      - ./mysql/timezone_2022a_posix:/usr/share/zoneinfo/ # Mount host's ./mysql/timezone_2022a_posix to container's /usr/share/zoneinfo/
-    ports: # Expose container's ports to the host
-      - "9906:3306" # Map container's port 3306 to host's port 9906
+    container_name: db
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE: MYSQL_DATABASE
+      MYSQL_USER: MYSQL_USER
+      MYSQL_PASSWORD: MYSQL_PASSWORD
+    volumes:
+      - ./mysql/my.conf:/etc/mysql/my.conf
+      - ./mysql/data:/var/lib/mysql
+    ports:
+      - "9906:3306"
+    command: bash -c "rm -rf /var/lib/mysql/* && docker-entrypoint.sh mysqld"
