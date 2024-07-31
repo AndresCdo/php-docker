@@ -1,29 +1,31 @@
 version: '3.3'
-services:
-    php-apache-environment:
-        container_name: php-apache
-        build:
-            context: ./php
-            dockerfile: Dockerfile
-        depends_on:
-            - db
-        volumes:
-            - ./php/src:/var/www/html/
-            - ./apache2/000-default.conf:/etc/apache2/sites-available/000-default.conf
-        ports:
-            - 8000:80
-    db:
-        container_name: db
-        image: mysql
-        command: mysqld --authentication_policy=mysql_native_password
-        restart: always
-        environment:
-            MYSQL_ROOT_PASSWORD: MYSQL_ROOT_PASSWORD
-            MYSQL_DATABASE: MYSQL_DATABASE
-            MYSQL_USER: MYSQL_USER
-            MYSQL_PASSWORD: MYSQL_PASSWORD
-        volumes:
-            - ./mysql/timezone_2022a_posix:/usr/share/zoneinfo/
-        ports:
-            - "9906:3306"
 
+services:
+  php-apache-environment:
+    container_name: php-apache
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    volumes:
+      - ./php/src:/usr/local/apache2/htdocs/
+      - ./apache2/000-default.conf:/etc/apache2/sites-available/000-default.conf
+    ports:
+      - 8000:80
+
+  db:
+    container_name: db
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE: MYSQL_DATABASE
+      MYSQL_USER: MYSQL_USER
+      MYSQL_PASSWORD: MYSQL_PASSWORD
+    volumes:
+      - ./mysql/my.conf:/etc/mysql/my.conf
+      - ./mysql/data:/var/lib/mysql
+    ports:
+      - "9906:3306"
+    command: bash -c "rm -rf /var/lib/mysql/* && docker-entrypoint.sh mysqld"
