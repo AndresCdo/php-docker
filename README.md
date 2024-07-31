@@ -35,7 +35,7 @@ The PHP-Apache server is configured to serve files from the `src` directory. You
 
 ### MySQL
 
-The MySQL configuration file is located in ./mysql/my.conf. You can change the configuration in this file. 
+The MySQL configuration file is located in `./mysql/my.cnf`. You can change the configuration in this file.
 The MySQL server is configured with the following environment variables:
 
 - `MYSQL_ROOT_PASSWORD`: The password for the `root` user.
